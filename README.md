@@ -1,1 +1,1 @@
-# chatSocket
+Chat para aprendizado em socket
