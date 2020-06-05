@@ -10,7 +10,6 @@ int main(int argc, char *argv[])
     int socket_desc, c, new_socket;
     struct sockaddr_in server, client;
     char *message, client_reply[2000];
-    char mensagens[2000];
 
     /* abre um socket */
     socket_desc = socket(AF_INET, SOCK_STREAM, 0); 
@@ -48,9 +47,7 @@ int main(int argc, char *argv[])
         printf("conexão aceita do client %s:%d\n", client_ip, client_port);
 
         do {
-           
             bzero(client_reply, sizeof(client_reply)); /* limpa a variável char[] */
-
             /* recebe dados do cliente */
             if (recv(new_socket, client_reply, 2000, 0) < 0)
             {
@@ -59,35 +56,28 @@ int main(int argc, char *argv[])
             }
             printf("Resposta recebida.\n");
             printf("%s\n", client_reply);
-            write(new_socket, message, strlen(message));
-            
+
             /* resposta ao cliente */
-             printf("Digite uma mensagem: ");
-             scanf("%s", mensagens);
-             fflush(stdin);
-if (send(socket_desc, mensagens, strlen(mensagens), 0) < 0) {
-      printf("Erro ao enviar\n");
-      return 1;
-    }
-    printf("Dados enviados.\n");
+             /* limpa a variável com a mensagem */
+        bzero(message, sizeof(message));
+        
+        /* envia dados */
+        printf("Digite uma mensagem: ");
 
-    if (recv(socket_desc, client_reply, 2000, 0) < 0) {
-      printf("Falha no recv\n");
-      return 1;
-    }
-    printf("%s\n", client_reply);
-             if (send(socket_desc, mensagens, strlen(mensagens), 0) < 0) {
-               printf("Erro ao enviar\n");
+        int ch, n = 0;
+        /* lê a entrada de dados do usuário via getchar */
+        while ((ch = getchar()) != '\n' && n < 2000) {
+            message[n] = ch;
+            ++n;
+        }
+
+        if (send(socket_desc, message, strlen(message), 0) < 0)
+        {
+            printf("Erro ao enviar\n");
             return 1;
-    }
-    printf("Dados enviados.\n");
-
-    if (recv(socket_desc, client_reply, 2000, 0) < 0) {
-      printf("Falha no recv\n");
-      return 1;
-    }
-    printf("%s\n", client_reply);
-           
+        }
+        printf("Dados enviados.\n");
+        
         } while(strcmp(client_reply, "exit") != 0);
     }
     if (new_socket < 0) 
